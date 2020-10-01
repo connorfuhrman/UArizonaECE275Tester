@@ -3,7 +3,6 @@ FROM gcc:10
 RUN apt-get update && apt-get install -y git wget curl
 
 # Example taken from https://github.com/Rikorose/gcc-cmake/blob/master/gcc-10/Dockerfile
-
 # Install CMake
 RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.2/cmake-3.18.2-Linux-x86_64.sh \
 	-q -O /tmp/cmake-install.sh \
@@ -23,10 +22,8 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o tmp/get-pip.py \
 RUN pip3 install --no-cache-dir pytest
 
 
-
 # Example taken from https://github.com/pblischak/boost-docker-test/blob/master/Dockerfile
-
-# Install Boost from https://dl.bintray.com/boostorg/release/1.74.0/source/boost_1_74_0.tar.bz2 
+# Install Boost
 RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.74.0/boost_1_74_0.tar.gz \
 	&& tar xfz boost_1_74_0.tar.gz \
 	&& rm boost_1_74_0.tar.gz \
@@ -39,10 +36,7 @@ RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.74.0
 
 ENV PATH="/usr/bin/cmake/bin:${PATH}"
 
-# Copy runtests.sh to the container
-COPY ./runtests.sh /runtests.sh 
-# Make this executable
-RUN chmod +x /runtests.sh
+# Useful notes for myself below:
 
 # Extract a tar file with tar -xzvf archive.tar.gz
 # Compress a tar file with tar -czvf name-of-archive.tar.gz /path/to/directory-or-file
@@ -60,5 +54,5 @@ RUN chmod +x /runtests.sh
 # docker run -d -it --name tester connorfuhrman/uarizona-ece275-tester:0.1
 # docker cp UnderTest.tar.gz tester:home
 # docker exec -it tester ./runtests.sh
-# docker stop tester
-# docker rm tester (do we need this!?)
+# docker stop tester (to stop the process)
+# docker rm tester (to remove)

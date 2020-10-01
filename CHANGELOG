@@ -1,0 +1,5 @@
+20200930:
+	- Updated dockerfile to no long include runtests.sh as GitLab environment does not require. 
+
+20200930:
+	- Made initial commit
