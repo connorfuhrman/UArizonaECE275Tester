@@ -1,0 +1,4 @@
+alias dbuild='docker build . -t connorfuhrman/uarizona-ece275-tester:base'
+alias drun='docker run --rm -it -v "$(pwd)":/home/underTest connorfuhrman/uarizona-ece275-tester:base'
+alias drebuild='dbuild --no-cache'
+alias dpush='docker push connorfuhrman/uarizona-ece275-tester:base'

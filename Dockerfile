@@ -1,18 +1,20 @@
-FROM gcc:10
+FROM alpine:3.12
 
-RUN apt-get update && apt-get install -y git wget curl
+RUN apk -U upgrade
 
-# Example taken from https://github.com/Rikorose/gcc-cmake/blob/master/gcc-10/Dockerfile
-# Install CMake
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.2/cmake-3.18.2-Linux-x86_64.sh \
-	-q -O /tmp/cmake-install.sh \
-	&& mkdir /usr/bin/cmake \
-	&& bash /tmp/cmake-install.sh --skip-license --prefix=/usr/bin/cmake \
-	&& rm /tmp/cmake-install.sh
+# Intall GCC and cmake along with many others
+RUN apk add bash clang build-base gcc make git tar curl wget gdb musl musl-dev musl-dbg musl-utils emacs && \
+	apk del cmake 
 
+# Install CMake binaries
+RUN apk add linux-headers openssl-dev
+RUN cd /tmp && \
+	wget https://github.com/Kitware/CMake/releases/download/v3.18.4/cmake-3.18.4.tar.gz && \
+	tar -xzf cmake-3.18.4.tar.gz && cd cmake-3.18.4 && ./bootstrap && make -j8 && make install && \
+	cd /tmp && rm -fr cmake*
 
 # Install Python
-RUN apt-get install -y python3.7-dev python2.7-dev
+RUN apk add python2-dev python3-dev
 # Install pip
 RUN curl https://bootstrap.pypa.io/get-pip.py -o tmp/get-pip.py \
 	&& python3 /tmp/get-pip.py \
@@ -21,20 +23,25 @@ RUN curl https://bootstrap.pypa.io/get-pip.py -o tmp/get-pip.py \
 # Install pytest
 RUN pip3 install --no-cache-dir pytest
 
+# Install Boost from Alpine package manager
+RUN apk add boost-dev
 
-# Example taken from https://github.com/pblischak/boost-docker-test/blob/master/Dockerfile
-# Install Boost
-RUN cd /home && wget http://downloads.sourceforge.net/project/boost/boost/1.74.0/boost_1_74_0.tar.gz \
-	&& tar xfz boost_1_74_0.tar.gz \
-	&& rm boost_1_74_0.tar.gz \
-	&& cd boost_1_74_0 \
-	&& ./bootstrap.sh --prefix=/usr/local --show-libraries \
-	&& ./b2 install \ 
-	&& cd /home \
-	&& rm -rf boost_1_74_0
-	 
+# Install GMP
+RUN apk add gmp-dev
 
-ENV PATH="/usr/bin/cmake/bin:${PATH}"
+# Install pretty table formatter
+RUN cd /tmp && \
+	git clone https://github.com/seleznevae/libfort.git && \
+	cd libfort && mkdir build && cd build && \
+	cmake .. && make -j4 install && \
+	rm -fr tmp/libfort
+
+# Add gensol.py to the root
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+RUN pip3 install --no-cache-dir --upgrade --force-reinstall uarizona-ece275-outputfileTester
+ADD gensol.py /
+	
+ENV COMMANDARGS /tester/COMMANDARGS.txt
 
 # Useful notes for myself below:
 
