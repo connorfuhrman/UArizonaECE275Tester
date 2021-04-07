@@ -34,12 +34,15 @@ RUN cd /tmp && \
 	git clone https://github.com/seleznevae/libfort.git && \
 	cd libfort && mkdir build && cd build && \
 	cmake .. && make -j4 install && \
-	rm -fr tmp/libfort
+	rm -fr /tmp/libfort
 
 # Add gensol.py to the root
-ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+#ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
 RUN pip3 install --no-cache-dir --upgrade --force-reinstall uarizona-ece275-outputfileTester
+RUN pip3 freeze
 ADD gensol.py /
+
+RUN apk add zip gnuplot ffmpeg
 	
 ENV COMMANDARGS /tester/COMMANDARGS.txt
 
